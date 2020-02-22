@@ -1,5 +1,6 @@
 # terminal
-
+This is just a simple blog.
+![intro](https://cdn.jsdelivr.net/gh/xVanTuring/terminal-blog@master/extra/Intro.png)
 ## Project setup
 ```
 yarn install
