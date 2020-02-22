@@ -7,6 +7,7 @@ Vue.use(Vuex)
 let blinkTimeOut = null
 export default new Vuex.Store({
   state: {
+    loaded: false,
     editing: {
       input: [],
       cursorIndex: 0,
@@ -86,6 +87,13 @@ export default new Vuex.Store({
     },
     pushLine (state, line) {
       state.history.push(line)
+    },
+    logInWith (state, userName) {
+      state.system.user = userName
+      state.system.cwd = '/'
+    },
+    loaded (state) {
+      state.loaded = true
     }
   },
   actions: {

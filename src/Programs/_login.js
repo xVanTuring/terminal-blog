@@ -12,6 +12,7 @@ export default function (state, prependChar) {
       state.system.user = state.system.login
       state.system.login = ''
       state.system.cwd = '/'
+      global.$cookies.set('terminal-user', state.system.user)
     }
   }
 }

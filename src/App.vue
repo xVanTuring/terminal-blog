@@ -24,22 +24,33 @@ export default {
   },
   components: { TInput, TLine },
   computed: {
-    ...mapState(['history', 'isIntroAnimDone'])
+    ...mapState(['history', 'isIntroAnimDone', 'system', 'loaded'])
   },
   methods: {
     ...mapActions(['onKeyDown']),
     ...mapMutations(['introAnimDone', 'pushLine'])
   },
-  async mounted () {
-    const splited = this.welcome.split('\n')
-    for (const line of splited) {
-      await new Promise(resolve => setTimeout(resolve, 500))
-      this.pushLine(line)
-      this.pushLine(' ')
+  watch: {
+    async loaded (newVal) {
+      if (newVal) {
+        await new Promise(resolve => setTimeout(resolve, 500))
+        if (!this.system.user) {
+          const splited = this.welcome.split('\n')
+          for (const line of splited) {
+            await new Promise(resolve => setTimeout(resolve, 200))
+            this.pushLine(line)
+            this.pushLine(' ')
+          }
+        }
+        // await new Promise(resolve => setTimeout(resolve, 500))
+        this.introAnimDone()
+        window.addEventListener('keydown', this.onKeyDown)
+      }
+      console.log(newVal)
     }
-    await new Promise(resolve => setTimeout(resolve, 500))
-    this.introAnimDone()
-    window.addEventListener('keydown', this.onKeyDown)
+  },
+  mounted () {
+
   },
   beforeMount () {
     window.removeEventListener('keydown', this.onKeyDown)
