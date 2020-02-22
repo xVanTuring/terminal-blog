@@ -46,7 +46,6 @@ export default {
         this.introAnimDone()
         window.addEventListener('keydown', this.onKeyDown)
       }
-      console.log(newVal)
     }
   },
   mounted () {
