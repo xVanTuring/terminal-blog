@@ -42,7 +42,6 @@ export default {
             this.pushLine(' ')
           }
         }
-        // await new Promise(resolve => setTimeout(resolve, 500))
         this.introAnimDone()
         window.addEventListener('keydown', this.onKeyDown)
       }

@@ -3,6 +3,8 @@ import Vuex from 'vuex'
 import { SpecialKeys } from '../Utils'
 // eslint-disable-next-line no-unused-vars
 import programs from '../Programs'
+import { defaultFS, find } from '../Programs/fs'
+import path from 'path'
 Vue.use(Vuex)
 let blinkTimeOut = null
 export default new Vuex.Store({
@@ -21,7 +23,9 @@ export default new Vuex.Store({
     system: {
       user: '',
       cwd: '',
-      login: ''
+      login: '',
+      path: '/bin',
+      fs: defaultFS()
     },
     isIntroAnimDone: false
   },
@@ -63,24 +67,41 @@ export default new Vuex.Store({
         programs.__login(state, prependChar)
       } else {
         const commandArr = state.editing.input.join('').split(' ')
-        if (commandArr.length === 0 || commandArr[0] === '') {
-          programs.__empty(state, prependChar)
-        } else {
+        const input = state.editing.input.join('') // pre
+        state.history.push(prependChar + input)
+        state.editing.input = [] // post
+        state.editing.cursorIndex = 0
+        if (commandArr.length !== 0 && commandArr[0] !== '') {
           const command = commandArr[0]
-          const exec = programs[command]
-
-          const input = state.editing.input.join('') // pre
-          state.history.push(prependChar + input)
-
-          if (exec && !command.startsWith('__')) {
-            exec(state, commandArr)
+          let isWithPath = false
+          if (command.startsWith('./') || command.startsWith('../') || command.startsWith('/')) {
+            isWithPath = true
+          }
+          let exec = null
+          if (!isWithPath) {
+            // search in system path
+            const pathArr = state.system.path.split(':')
+            for (const _path of pathArr) { // move code to find
+              const result = find(state.system.fs, path.join(_path, command))
+              if (result) {
+                exec = result
+              }
+              break
+            }
           } else {
-            programs.__na(state, commandArr)
+            exec = find(state.system.fs, path.resolve(state.system.cwd, command))
+          }
+          if (exec == null) {
+            programs.__na(state, commandArr, isWithPath)
+          } else {
+            if (typeof exec === 'function') {
+              exec(state, commandArr)
+            } else if (typeof exec === 'string' && exec === '__DIR__') {
+              state.history.push(`${command}: Is a directory`)
+            }
           }
         }
       }
-      state.editing.input = [] // post
-      state.editing.cursorIndex = 0
     },
     introAnimDone (state) {
       state.isIntroAnimDone = true
