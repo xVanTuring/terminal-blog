@@ -3,7 +3,7 @@ import Vuex from 'vuex'
 import { SpecialKeys } from '../Utils'
 // eslint-disable-next-line no-unused-vars
 import programs from '../Programs'
-import { defaultFS, find } from '../Programs/fs'
+import { defaultFS, find, DIR } from '../Programs/fs'
 import path from 'path'
 Vue.use(Vuex)
 let blinkTimeOut = null
@@ -77,6 +77,16 @@ export default new Vuex.Store({
           if (command.startsWith('./') || command.startsWith('../') || command.startsWith('/')) {
             isWithPath = true
           }
+          if (!isWithPath) {
+            switch (command) {
+              case 'exit':
+                programs.exit(state)
+                return
+              case 'cd' :
+                programs.cd(state, commandArr)
+                return
+            }
+          }
           let exec = null
           if (!isWithPath) {
             // search in system path
@@ -96,7 +106,7 @@ export default new Vuex.Store({
           } else {
             if (typeof exec === 'function') {
               exec(state, commandArr)
-            } else if (typeof exec === 'string' && exec === '__DIR__') {
+            } else if (typeof exec === 'string' && exec === DIR) {
               state.history.push(`${command}: Is a directory`)
             }
           }

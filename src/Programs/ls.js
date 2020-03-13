@@ -13,6 +13,6 @@ export default function (state, commandArr) {
       return false
     }
     return path.dirname(name) === state.system.cwd
-  })
+  }).map((name) => path.basename(name)).filter((name) => name !== '')
   state.history.push(filted.join('    '))
 }
