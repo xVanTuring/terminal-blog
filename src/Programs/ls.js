@@ -5,8 +5,6 @@ import path from 'path'
  * @param {string[]} commandArr
  */
 export default function (state, commandArr) {
-  console.log(state.system.fs)
-  console.log(state.system.cwd)
   const list = Object.keys(state.system.fs)
   const filted = list.filter(name => {
     if (!name.startsWith(name)) {

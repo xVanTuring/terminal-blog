@@ -17,6 +17,5 @@ export function defaultFS () {
   }
 }
 export function find (fs, name) {
-  console.log(`searching ${name}`)
   return fs[path.resolve(name)]
 }
